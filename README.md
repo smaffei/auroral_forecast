@@ -28,6 +28,8 @@ The folder ```datasets``` contains all the raw data necessary to reproduce the s
 - ```datasets/simplemaps_worldcities_basicv1.73```: a list of world cities and their coordinates. Taken from https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwji1rqjnqX5AhUaHuwKHT6VCocQFnoECAkQAQ&url=https%3A%2F%2Fgitlab.huma-num.fr%2Fnlambert%2Fresources%2F-%2Ftree%2Fmaster%2Fdatasets%2Fsimplemaps_worldcities_basicv1.73&usg=AOvVaw34lTEr0D5PXeySE2pXxK4s
 
 
+### Python 
+
 The folder ```Python``` contains the data on the auroral boundary (both for 2020 and 2070) and the Python scripts used to produce figure 6 of Maffei et al.:
 - ```Python/coords2020_bisection``` and ```Python/coords2070_bisection``` contain files in which poleward and equatorward bounds are given as a function of longitude for both the auroral zones and danger zones. Bounds are computed for 2020 from the IGRF13 model and for 2070 from the forecasts mentioned above.
 - ```Python/convert_IPGP_to_aacgmv2_magmodel_fmt.py``` is a Python scripts used to modify the original IPGP forecast coefficients file (see above) to prepare the file ```datasets/models/ipgpMF4aacgmv2_from1590.txt```. With small modifications, it can be used to convert any geomagnetic field model into a format easily accepted by ```aacgmv2```
