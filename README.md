@@ -6,7 +6,7 @@ This repository contains estimates for the auroral zones boundaries for the year
 
 These estimates are based on existing geomagnetic field models and forecasts. In particular the configuration of the geomagnetic field in 2020 is taken from the IGRF13 (Alken et al., 2021), while estimates for the geomagnetic field in 2070 are taken from three different sources: 
 
-1) the data assimilation forecast from Sanchez et al., 2020 (MPG forecast);
+1) the data assimilation forecast from Sanchez et al., 2020 (MPG forecast). Currently the MPG forecast is only available by the original authors upon reasonable request;
 2) a simple linear extrapolation of the IGRF13 model coefficients in time (IGRF13 forecast). Original dataset available at https://www.ncei.noaa.gov/products/international-geomagnetic-reference-field;
 3) the single-epoch inversion forecast from Aubert, 2015 (IPGP forecast). Original dataset available at http://www.ipgp.fr/~aubert/tools.html#data.
 
@@ -36,7 +36,7 @@ The folder ```Python``` contains the data on the auroral boundary (both for 2020
 - ```Python/auroral_forecast.py``` is the script used to reproduce figure 6 of Maffei et al. (also placed in ```Python/figures```). Given that the auroral bounds are already present in the repository (under ```Python/coords2020_bisection``` and ```Python/coords2070_bisection```) the script will not recalculate them. If the folders ```Python/coords2020_bisection``` and ```Python/coords2070_bisection``` are removed, the auroral bounds will be recalculated from the geomagnetic field models and forecast located in ```datasets/models/```.
 - ```Python/aacgm_functions.py``` a collection of Python functions needed by ```Python/auroral_forecast.py```.
 
-The above Python scripts have been written in Python 3.8
+The above Python scripts have been written in Python 3.8 and require the ```aacgmv2``` Python wrapper ( https://github.com/aburrell/aacgmv2 )
 
 
 
