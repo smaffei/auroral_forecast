@@ -17,6 +17,8 @@ from multiprocessing import Process, Pool, Queue
 from joblib import Parallel, delayed
 import math
 from shapely import geometry
+from scipy.spatial.transform import Rotation as R
+
 
 import importlib
 import sys
@@ -26,6 +28,56 @@ from importlib import reload
 r_cmb = 3485.0e3
 r_a   = 6371.0e3
 
+
+def spher2cart(r,lat,lon):
+    '''
+    Convert point position from spherical to cartesian coordinates
+    
+    INPUT:
+        r   = radius of the point
+        lat = latitude (zero is the equator) of the point, in degrees
+        lon = longitude of the point, in degrees
+    OUTPUT:
+        x,y,z = cartesian coordinates of the point
+        
+    '''
+    lat = lat * np.pi/180
+    lon = lon * np.pi/180
+    theta = -lat+np.pi/2
+    
+
+    x = r * math.sin(theta) * math.cos(lon)
+    y = r * math.sin(theta) * math.sin(lon)
+    z = r * math.cos(theta)    
+    return x, y, z
+
+
+def cart2spher(x,y,z):
+    '''
+    Convert point position from cartesian to spherical coordinates
+    
+    INPUT:
+        x,y,z = cartesian coordinates of the point
+    OUTPUT:
+        r   = radius of the point
+        lat = latitude (zero is the equator) of the point, in degrees
+        lon = longitude of the point, in degrees
+    '''
+    
+    r = math.sqrt(x**2+y**2+z**2)
+    
+    h = math.sqrt(x**2+y**2)
+    theta = math.atan2(h,z)
+    lat = -theta + np.pi/2
+    lat = lat * 180/np.pi
+    
+    lon = math.atan2(y,x)
+    lon = lon * 180/np.pi
+    
+    return r,lat,lon
+    
+    
+    
 
 def angular_distance(lon1,lat1,lon2,lat2):
     # calculate angular distance between two points 1 and 2 the coordinates of which are in deg
@@ -117,6 +169,119 @@ def lat_bisection(magfolder, magfile, year, month, day, lons, target_lat, target
     np.savetxt(folder_out+'bisection_'+str(target_lat)+'_lats_'+magfile,lats)
 
     return lats
+
+def rot_lon_lat(lon,lat,r,rot):
+    '''
+    Transform lon and lat of a point to a rotated coordinate system
+
+    INPUT:
+        lon,lat,r : lon, lat (in degrees) and radius of the original point
+        rot : the rotation matrix (calculated with scipy.spatial.transform)
+    OUTPUT:
+        LON, LAT : lon and lat (in degrees) in the transformed system
+    '''
+    x,y,z = spher2cart(r,lat,lon)
+    X,Y,Z = rot.apply([x,y,z])
+    R, LAT, LON = cart2spher(X,Y,Z)
+
+    return LAT, LON
+
+
+
+def lat_bisection_transformed_coords(magfolder, magfile, year, month, day, rc, latc,lonc, rot, LONS, target_lat, target_res, LAT1, LAT2, max_iterations, folder_out):
+    '''
+    Bisection alogorithm to find the geographic latitude at which the CGM latitude is target_lat within the resolution res_target
+
+    This modified version uses transformed coordinates to solve the issue of the zone passing over the pole.
+    The longitudes are expressed in a transformed coordinate system centered around a pole inside the oval (i.e. a rough centroid)
+    
+    INPUT:
+        magfile: input geomagnetic field model for aacgmv2
+        year, month, day: the temporal instant in which to calculate the cgm coordinates
+        rc, latc, lonc : radius and lon and lat (in degrees) of the point that defines the coordinate transformation.
+                    the coordinate transformation is a rotation such that lonc, latc is the north pole in the transformed system
+        rot : the rotation matrix (calculated with scipy.spatial.transform)
+        LONS: the longitudes (in degrees) in the transformed system along which the bisection needs to be performed: a 1d numpy array
+        target_lat: target latitude, in degrees
+        target_res: desired resolution, in degrees
+        LAT1, LAT2 : initial interval for the bisection method, in degrees, in the transformed system
+        folder_out :  where to print the final result
+    OUTPUT:
+        a file containing the latitudes, for each longitude, calculated from the bisection algorithm
+        
+    '''
+    rinv   = rot.inv() 
+    coords = []
+
+    # point to a specific magnetic field coefficient model file (magmodel is the default)
+    aacgmv2.IGRF_COEFFS = magfolder+magfile
+    aacgmv2.wrapper.set_coeff_path(aacgmv2.IGRF_COEFFS,True)      
+    
+    # will I need to define month and year as well?
+    dtime = dt.datetime(year, month, day)
+    
+    for i in range(LONS.shape[0]):
+        # northern zone , polar border
+        LAT_pol_i = LAT1
+        LAT_eq_i  = LAT2
+        res = 10*target_res
+        iteration =0
+        while res>=target_res:
+            LAT_mid_i = 0.5*(LAT_pol_i + LAT_eq_i)
+            
+            lat_pol_i, lon_pol_i   = rot_lon_lat(LONS[i],LAT_pol_i,rc,rinv)
+            lat_eq_i, lon_eq_i     = rot_lon_lat(LONS[i],LAT_eq_i,rc,rinv)
+            lat_mid_i, lon_mid_i   = rot_lon_lat(LONS[i],LAT_mid_i,rc,rinv)
+
+            if iteration == 0:
+                CGMlat_pol_i, CGMlon_pol_i, CGMmlt_pol_i = aacgmv2.get_aacgm_coord(lat_pol_i, lon_pol_i, 0, dtime, method='TRACE')
+                CGMlat_eq_i, CGMlon_eq_i, CGMmlt_eq_i = aacgmv2.get_aacgm_coord(lat_eq_i, lon_eq_i, 0, dtime, method='TRACE')
+                if np.isnan(CGMlat_eq_i):
+                    # in case I calculate undefined values of CGM coordinates
+                    CGMlat_eq_i = 0
+                if np.isnan(CGMlat_pol_i):
+                    CGMlat_pol_i = 0
+                
+            CGMlat_mid_i, CGMlon_mid_i, CGMmlt_mid_i = aacgmv2.get_aacgm_coord(lat_mid_i, lon_mid_i, 0, dtime, method='TRACE')
+            if np.isnan(CGMlat_mid_i):
+                    CGMlat_mid_i = 0
+                    
+            #print('longitude = '+str(lons[i])+'; lat_pol_i = '+ str(lat_pol_i)+'; lat_eq_i = '+ str(lat_eq_i)+'; lat_mid_i = '+ str(lat_mid_i))
+            #print('CGMlat_pol_i = '+str(CGMlat_pol_i)+'; CGMlat_eq_i = '+str(CGMlat_eq_i)+'; CGMlat_mid_i = '+str(CGMlat_mid_i))
+            
+            if (CGMlat_pol_i -target_lat)*(CGMlat_mid_i -target_lat) < 0:
+                LAT_eq_i = LAT_mid_i
+                CGMlat_eq_i = CGMlat_mid_i
+            elif (CGMlat_eq_i -target_lat)*(CGMlat_mid_i -target_lat) < 0:
+                LAT_pol_i = LAT_mid_i
+                CGMlat_pol_i = CGMlat_mid_i
+            elif (CGMlat_mid_i -target_lat) == 0:
+                coords.append([lon_mid_i,lat_mid_i])
+        
+            res = abs(CGMlat_mid_i-target_lat)
+            #print('error = '+str(res))
+            #print(' ')
+            
+            iteration = iteration +1
+            if iteration >= max_iterations:
+                coords.append([lon_mid_i,lat_mid_i])
+                print('lat_bisection: max iterations exceeded')
+                break
+            if res<target_res:
+                coords.append([lon_mid_i,lat_mid_i])
+                
+        # use previous calculation as first guess for next iteration
+        LAT1 = np.amin([LAT_mid_i+10,90])
+        LAT2 = np.amax([LAT_mid_i-10,-90])
+        
+    coords = np.array(coords)
+    print(coords)
+    print(folder_out+'bisection_transformed_coords_'+str(target_lat)+'_lats_lons_'+magfile)
+    np.savetxt(folder_out+'bisection_transformed_coords_'+str(target_lat)+'_lats_lons_'+magfile,coords)
+
+    return coords
+
+
 
 def intersection_bisection(folder_model1, magfile1, 
                            folder_model2, magfile2, 
@@ -825,4 +990,102 @@ def trnsfrm_lon(plat,plon,qlat,qlon):
     tranlon = math.atan2(t,b)
     
     return tranlon
+    
+
+def label_cities1(ax):
+    '''
+    To plot markers and labels for some high-latitude cities in the 'danger zone' plots
+    '''
+    
+    FS = 10 # font size
+    TC = 'brown' # text color
+    
+    ax.plot(-149.1091,61.1508,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(-149.1091+1,61.1508+1,'Anchorage',fontsize=FS,color=TC,transform=ccrs.PlateCarree())
+    
+    ax.plot(-113.4903,53.5344,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(-113.4903+1,53.5344-1,'Edmonton',fontsize=FS,color=TC,va='top',transform=ccrs.PlateCarree())
+
+    ax.plot(-71.2081,46.8139,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(-71.2081+1,46.8139+1,'Quebec City',fontsize=FS,color=TC,transform=ccrs.PlateCarree())
+
+    ax.plot(-73.9249,40.6943,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(-73.9249+1,40.6943-1,'New York City',fontsize=FS,color=TC,va='top',transform=ccrs.PlateCarree())
+
+    ax.plot(-21.935,64.1475,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(-21.935+1,64.1475+1,'Reykjavík',fontsize=FS,color=TC,transform=ccrs.PlateCarree())
+
+    ax.plot(10.7528,59.9111,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(10.7528+1,59.9111+1,'Oslo',fontsize=FS,color=TC,transform=ccrs.PlateCarree())
+
+    ax.plot(37.6178,55.7558,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(37.6178+1,55.7558+1,'Moscow',fontsize=FS,color=TC,transform=ccrs.PlateCarree())
+
+    ax.plot(21.0333,52.2167,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(21.0333+1,52.2167-1,'Warsaw',fontsize=FS,color=TC,va='top',transform=ccrs.PlateCarree())
+
+    ax.plot(129.7319,62.0272,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(129.7319+1,62.0272+1,'Yakutsk',fontsize=FS,color=TC,transform=ccrs.PlateCarree())
+
+    ax.plot(144.9631,-37.8136,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(144.9631+1,-37.8136+1,'Melbourne',fontsize=FS,color=TC,transform=ccrs.PlateCarree())
+
+    ax.plot(170.5,-45.8667,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(170.5-1,-45.8667-1,'Dunedin',fontsize=FS,color=TC,va='top',ha='right',transform=ccrs.PlateCarree())
+
+    ax.plot(-1.5494718924623057,53.810380928219175,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(-1.5494718924623057+1,53.810380928219175-1,'Leeds',fontsize=FS,color=TC,va='top',transform=ccrs.PlateCarree())
+    
+
+    return
+    
+    
+def label_cities2(ax):
+    '''
+    To plot markers and labels for some high-latitude cities in the 'danger zone' plots.
+    Geared for a smaller, summary plot
+    '''
+    
+    FS = 10 # font size
+    TC = 'brown' # text color
+    
+    ax.plot(-149.1091,61.1508,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(-149.1091+2,61.1508+2,'Anchorage',fontsize=FS,color=TC,transform=ccrs.PlateCarree())
+    
+    ax.plot(-113.4903,53.5344,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(-113.4903+2,53.5344-2,'Edmonton',fontsize=FS,color=TC,va='top',transform=ccrs.PlateCarree())
+
+    ax.plot(-71.2081,46.8139,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(-71.2081+2,46.8139+2,'Quebec City',fontsize=FS,color=TC,transform=ccrs.PlateCarree())
+
+    ax.plot(-73.9249,40.6943,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(-73.9249+2,40.6943-2,'New York City',fontsize=FS,color=TC,va='top',transform=ccrs.PlateCarree())
+
+    ax.plot(-21.935,64.1475,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(-21.935+2,64.1475+2,'Reykjavík',fontsize=FS,color=TC,transform=ccrs.PlateCarree())
+
+#    ax.plot(10.7528,59.9111,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+#    ax.text(10.7528+2,59.9111+2,'Oslo',fontsize=FS,color=TC,transform=ccrs.PlateCarree())
+
+    ax.plot(37.6178,55.7558,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(37.6178+2,55.7558+2,'Moscow',fontsize=FS,color=TC,transform=ccrs.PlateCarree())
+
+    ax.plot(21.0333,52.2167,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(21.0333+2,52.2167-2,'Warsaw',fontsize=FS,color=TC,va='top',transform=ccrs.PlateCarree())
+
+    ax.plot(129.7319,62.0272,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(129.7319+2,62.0272+2,'Yakutsk',fontsize=FS,color=TC,transform=ccrs.PlateCarree())
+
+    ax.plot(144.9631,-37.8136,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(144.9631-2,-37.8136-2,'Melbourne',fontsize=FS,color=TC,va='top',ha='right',transform=ccrs.PlateCarree())
+
+    ax.plot(170.5,-45.8667,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(170.5-2,-45.8667-2,'Dunedin',fontsize=FS,color=TC,va='top',ha='right',transform=ccrs.PlateCarree())
+    
+    ax.plot(-1.5494718924623057,53.810380928219175,'o',color=TC,ms =4,transform=ccrs.PlateCarree())
+    ax.text(-1.5494718924623057+2,53.810380928219175-2,'Leeds',fontsize=FS,color=TC,va='top',transform=ccrs.PlateCarree())
+    
+    return   
+    
+    
     

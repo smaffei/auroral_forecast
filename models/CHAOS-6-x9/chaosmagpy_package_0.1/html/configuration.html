@@ -1,0 +1,182 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Configuration &#8212; ChaosMagPy 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Usage" href="usage.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Usage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ChaosMagPy 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p>ChaosMagPy internally uses a number of parameters and coefficient/data files,
+whose numerical values and filepaths are stored in a dictionary-like container,
+called <code class="docutils literal notranslate"><span class="pre">basicConfig</span></code>. Usually, the content of it need not be changed.
+However, if for example one wishes to compute a time series of the
+external field beyond the limit of the builtin RC index file, then ChaosMagPy
+can be configured to use an updates RC index file.</p>
+<p>To view the parameters in <code class="docutils literal notranslate"><span class="pre">basicConfig</span></code>, do the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">chaosmagpy</span> <span class="kn">as</span> <span class="nn">cp</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will print a list of the parameters than can in principle be changed.
+For example, it contains Earth’s surface radius <code class="docutils literal notranslate"><span class="pre">params.r_surf</span></code>, which is
+used as reference radius for the spherical harmonic representation of the
+magnetic potential field. For a complete list, see
+<a class="reference internal" href="references.html#label-configuration-list"><span class="std std-ref">Configuration utilities (config_utils)</span></a>.</p>
+<div class="section" id="change-rc-index-file">
+<h2>Change RC index file<a class="headerlink" href="#change-rc-index-file" title="Permalink to this headline">¶</a></h2>
+<p>Download a new RC-index file either directly as <code class="docutils literal notranslate"><span class="pre">dat</span></code>-file from
+<a class="reference external" href="http://www.spacecenter.dk/files/magnetic-models/RC/current/">spacecenter.dk</a>
+or using the function <a class="reference internal" href="references.html#data_utils.save_RC_h5file" title="data_utils.save_RC_h5file"><code class="xref py py-func docutils literal notranslate"><span class="pre">data_utils.save_RC_h5file()</span></code></a> (saved as
+<code class="docutils literal notranslate"><span class="pre">h5</span></code>-file):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">chaosmagpy.data_utils</span> <span class="kn">import</span> <span class="n">save_RC_h5file</span>
+
+<span class="n">save_RC_h5file</span><span class="p">(</span><span class="s1">&#39;my_RC_file.h5&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>There is no difference in speed when using <code class="docutils literal notranslate"><span class="pre">dat</span></code> or <code class="docutils literal notranslate"><span class="pre">h5</span></code> file format in
+this case. After importing ChaosMagPy, provide the path to the new RC-index
+file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">chaosmagpy</span> <span class="kn">as</span> <span class="nn">cp</span>
+
+<span class="n">cp</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">[</span><span class="s1">&#39;file.RC_index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;my_RC_file.h5&#39;</span>
+</pre></div>
+</div>
+<p>This should be done somewhere at the beginning of the script, otherwise
+ChaosMagPy uses the builtin RC index file.</p>
+</div>
+<div class="section" id="save-and-load-custom-configuration">
+<h2>Save and load custom configuration<a class="headerlink" href="#save-and-load-custom-configuration" title="Permalink to this headline">¶</a></h2>
+<p>The configuration values can also be read from and written to a simple text
+file. To ensure the correct format of the text file, it is best to save the
+current configuration:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">chaosmagpy</span> <span class="kn">as</span> <span class="nn">cp</span>
+
+<span class="n">cp</span><span class="o">.</span><span class="n">basicConfig</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;my_config.txt&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A typical line looks like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>params.r_surf : <span class="m">6371</span>.2
+</pre></div>
+</div>
+<p>Comments have to start with <code class="docutils literal notranslate"><span class="pre">#</span></code>, empty lines are skipped and key-value
+pairs are separated with <code class="docutils literal notranslate"><span class="pre">:</span></code>. Change the values in the file and load it into
+ChaosMagPy at the beginning of the script:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cp</span><span class="o">.</span><span class="n">basicConfig</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;my_config.txt&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="index.html">Table Of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#change-rc-index-file">Change RC index file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#save-and-load-custom-configuration">Save and load custom configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">API references</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="usage.html"
+                        title="next chapter">Usage</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/configuration.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Usage"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ChaosMagPy 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Clemens Kloss.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.9.
+    </div>
+  </body>
+</html>

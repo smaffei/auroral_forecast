@@ -1,0 +1,319 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Usage &#8212; ChaosMagPy 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API references" href="references.html" />
+    <link rel="prev" title="Configuration" href="configuration.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="references.html" title="API references"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ChaosMagPy 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>Here are some simple examples on how to use the package. This only requires a
+CHAOS model mat-file, e.g. “CHAOS-6-x7.mat” in the current working directory
+which can be downloaded <a class="reference external" href="http://www.spacecenter.dk/files/magnetic-models/CHAOS-6/">here</a>.</p>
+<div class="section" id="plotting-the-map-of-the-time-dependent-internal-field">
+<h2>Plotting the map of the time-dependent internal field<a class="headerlink" href="#plotting-the-map-of-the-time-dependent-internal-field" title="Permalink to this headline">¶</a></h2>
+<p>Here, we make a map of the first time-derivative of the time-dependent internal
+part of the model. We will plot it on the surface at 3485 km (core-mantle
+boundary) from the center of Earth and on January 1, 2000:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">chaosmagpy</span> <span class="kn">as</span> <span class="nn">cp</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">load_CHAOS_matfile</span><span class="p">(</span><span class="s1">&#39;CHAOS-6-x7.mat&#39;</span><span class="p">)</span>
+
+<span class="n">radius</span> <span class="o">=</span> <span class="mf">3485.0</span>  <span class="c1"># km, here core-mantle boundary</span>
+<span class="n">time</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># mjd2000, here Jan 1, 2000 0:00 UTC</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">plot_maps_tdep</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">nmax</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">deriv</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># plots the SV up to degree 16</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<img alt="_images/plot_maps_tdep.png" src="_images/plot_maps_tdep.png" />
+<p class="caption"><span class="caption-text">Secular variation at the core-mantle-boundary up to degree 16 in
+January 1, 2000 0:00 UTC.</span></p>
+</div>
+<p>Save Gauss coefficients of the time-dependent internal (i.e. large-scale core)
+field in shc-format to a file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">save_shcfile</span><span class="p">(</span><span class="s1">&#39;CHAOS-6-x7_tdep.shc&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;tdep&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="plotting-the-map-of-the-static-internal-field">
+<h2>Plotting the map of the static internal field<a class="headerlink" href="#plotting-the-map-of-the-static-internal-field" title="Permalink to this headline">¶</a></h2>
+<p>Similarly, the static internal (i.e. small-scale crustal) part of the model can
+be plotted on a map:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">chaosmagpy</span> <span class="kn">as</span> <span class="nn">cp</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">load_CHAOS_matfile</span><span class="p">(</span><span class="s1">&#39;CHAOS-6-x7.mat&#39;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">plot_maps_static</span><span class="p">(</span><span class="n">radius</span><span class="o">=</span><span class="mf">6371.2</span><span class="p">,</span> <span class="n">nmax</span><span class="o">=</span><span class="mi">85</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id2">
+<img alt="_images/plot_maps_static.png" src="_images/plot_maps_static.png" />
+<p class="caption"><span class="caption-text">Static internal small-scale field at Earth’s surface up to degree 85.</span></p>
+</div>
+<p>and saved</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">save_shcfile</span><span class="p">(</span><span class="s1">&#39;CHAOS-6-x7_static.shc&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;static&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="computing-field-components-on-a-grid">
+<h2>Computing field components on a grid<a class="headerlink" href="#computing-field-components-on-a-grid" title="Permalink to this headline">¶</a></h2>
+<p>Instead of plotting the field components, we can just have ChaosMagPy return
+the numerical values of the different sources in the model. For
+example, the time-dependent internal field:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">chaosmagpy</span> <span class="kn">import</span> <span class="n">load_CHAOS_matfile</span>
+<span class="kn">from</span> <span class="nn">chaosmagpy.model_utils</span> <span class="kn">import</span> <span class="n">synth_values</span>
+<span class="kn">from</span> <span class="nn">chaosmagpy.data_utils</span> <span class="kn">import</span> <span class="n">mjd2000</span>
+
+<span class="c1"># create full grid</span>
+<span class="n">radius</span> <span class="o">=</span> <span class="mf">3485.</span>  <span class="c1"># km, core-mantle boundary</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">180.</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">181</span><span class="p">)</span>  <span class="c1"># colatitude in degrees</span>
+<span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">180.</span><span class="p">,</span> <span class="mf">180.</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">361</span><span class="p">)</span>  <span class="c1"># longitude in degrees</span>
+
+<span class="n">phi_grid</span><span class="p">,</span> <span class="n">theta_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
+<span class="n">radius_grid</span> <span class="o">=</span> <span class="n">radius</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">phi_grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="n">time</span> <span class="o">=</span> <span class="n">mjd2000</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># modified Julian date</span>
+
+<span class="c1"># load the CHAOS model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">load_CHAOS_matfile</span><span class="p">(</span><span class="s1">&#39;CHAOS-6-x7.mat&#39;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Computing core field.&#39;</span><span class="p">)</span>
+<span class="n">coeffs</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">synth_coeffs_tdep</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">nmax</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">deriv</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># SV max. degree 16</span>
+
+<span class="n">B_radius</span><span class="p">,</span> <span class="n">B_theta</span><span class="p">,</span> <span class="n">B_phi</span> <span class="o">=</span> <span class="n">synth_values</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">radius_grid</span><span class="p">,</span> <span class="n">theta_grid</span><span class="p">,</span> <span class="n">phi_grid</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When using a fully specified regular grid, consider <code class="docutils literal notranslate"><span class="pre">grid=True</span></code> option for
+speed. It will internally compute a grid similar to <code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.meshgrid()</span></code>
+without repeating some computations (note the usage of, for example, <code class="docutils literal notranslate"><span class="pre">theta</span></code>
+instead of <code class="docutils literal notranslate"><span class="pre">theta_grid</span></code>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">B_radius</span><span class="p">,</span> <span class="n">B_theta</span><span class="p">,</span> <span class="n">B_phi</span> <span class="o">=</span> <span class="n">synth_values</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The same computation can be done with other sources described by the model:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="13%" />
+<col width="22%" />
+<col width="65%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Source</th>
+<th class="head">Type</th>
+<th class="head">Method in <a class="reference internal" href="references.html#chaos.CHAOS" title="chaos.CHAOS"><code class="xref py py-class docutils literal notranslate"><span class="pre">CHAOS</span></code></a> class</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td rowspan="2">internal</td>
+<td>time-dependent</td>
+<td><a class="reference internal" href="references.html#chaos.CHAOS.synth_coeffs_tdep" title="chaos.CHAOS.synth_coeffs_tdep"><code class="xref py py-meth docutils literal notranslate"><span class="pre">synth_coeffs_tdep()</span></code></a></td>
+</tr>
+<tr class="row-odd"><td>static</td>
+<td><a class="reference internal" href="references.html#chaos.CHAOS.synth_coeffs_static" title="chaos.CHAOS.synth_coeffs_static"><code class="xref py py-meth docutils literal notranslate"><span class="pre">synth_coeffs_static()</span></code></a></td>
+</tr>
+<tr class="row-even"><td rowspan="2">external</td>
+<td>time-dep. (GSM)</td>
+<td><a class="reference internal" href="references.html#chaos.CHAOS.synth_coeffs_gsm" title="chaos.CHAOS.synth_coeffs_gsm"><code class="xref py py-meth docutils literal notranslate"><span class="pre">synth_coeffs_gsm()</span></code></a></td>
+</tr>
+<tr class="row-odd"><td>time-dep. (SM)</td>
+<td><a class="reference internal" href="references.html#chaos.CHAOS.synth_coeffs_sm" title="chaos.CHAOS.synth_coeffs_sm"><code class="xref py py-meth docutils literal notranslate"><span class="pre">synth_coeffs_sm()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+<p>We can also directly calculate the magnetic field components without having to
+synthesize the spherical harmonic coefficients first. Use one of the following
+methods:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="13%" />
+<col width="22%" />
+<col width="65%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Source</th>
+<th class="head">Type</th>
+<th class="head">Method in <a class="reference internal" href="references.html#chaos.CHAOS" title="chaos.CHAOS"><code class="xref py py-class docutils literal notranslate"><span class="pre">CHAOS</span></code></a> class</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td rowspan="2">internal</td>
+<td>time-dependent</td>
+<td><a class="reference internal" href="references.html#chaos.CHAOS.synth_values_tdep" title="chaos.CHAOS.synth_values_tdep"><code class="xref py py-meth docutils literal notranslate"><span class="pre">synth_values_tdep()</span></code></a></td>
+</tr>
+<tr class="row-odd"><td>static</td>
+<td><a class="reference internal" href="references.html#chaos.CHAOS.synth_values_static" title="chaos.CHAOS.synth_values_static"><code class="xref py py-meth docutils literal notranslate"><span class="pre">synth_values_static()</span></code></a></td>
+</tr>
+<tr class="row-even"><td rowspan="2">external</td>
+<td>time-dep. (GSM)</td>
+<td><a class="reference internal" href="references.html#chaos.CHAOS.synth_values_gsm" title="chaos.CHAOS.synth_values_gsm"><code class="xref py py-meth docutils literal notranslate"><span class="pre">synth_values_gsm()</span></code></a></td>
+</tr>
+<tr class="row-odd"><td>time-dep. (SM)</td>
+<td><a class="reference internal" href="references.html#chaos.CHAOS.synth_values_sm" title="chaos.CHAOS.synth_values_sm"><code class="xref py py-meth docutils literal notranslate"><span class="pre">synth_values_sm()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="computing-the-timeseries-of-field-components-at-two-ground-observatories">
+<h2>Computing the timeseries of field components at two ground observatories<a class="headerlink" href="#computing-the-timeseries-of-field-components-at-two-ground-observatories" title="Permalink to this headline">¶</a></h2>
+<p>Compute the timeseries of the first time-derivative of the field components at
+the ground observatories in Niemegk (Germany) and Mbour (Senegal).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">chaosmagpy</span> <span class="kn">import</span> <span class="n">load_CHAOS_matfile</span>
+<span class="kn">from</span> <span class="nn">chaosmagpy.model_utils</span> <span class="kn">import</span> <span class="n">synth_values</span>
+<span class="kn">from</span> <span class="nn">chaosmagpy.data_utils</span> <span class="kn">import</span> <span class="n">mjd2000</span>
+<span class="kn">from</span> <span class="nn">chaosmagpy.plot_utils</span> <span class="kn">import</span> <span class="n">plot_timeseries</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">load_CHAOS_matfile</span><span class="p">(</span><span class="s1">&#39;CHAOS-6-x7.mat&#39;</span><span class="p">)</span>
+
+<span class="n">N</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">mjd2000</span><span class="p">(</span><span class="mi">1998</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">mjd2000</span><span class="p">(</span><span class="mi">2018</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">num</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+<span class="n">radius</span> <span class="o">=</span> <span class="mf">6371.2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,))</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">75.62</span><span class="p">,</span> <span class="mf">37.93</span><span class="p">])</span>  <span class="c1"># colatitude in degrees</span>
+<span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">343.03</span><span class="p">,</span> <span class="mf">12.68</span><span class="p">])</span>  <span class="c1"># longitude in degrees</span>
+
+<span class="n">stations</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Mbour&#39;</span><span class="p">,</span> <span class="s1">&#39;Niemegk&#39;</span><span class="p">]</span>  <span class="c1"># ground observatory names</span>
+
+<span class="c1"># reshape to use NumPy broadcasting</span>
+<span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>  <span class="c1"># 1 x N</span>
+<span class="n">radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># 2 x 1</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># 2 x 1</span>
+<span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># 2 x 1</span>
+
+<span class="n">coeffs</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">synth_coeffs_tdep</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">nmax</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">deriv</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># compute field components of shape 2 x N</span>
+<span class="n">B_radius</span><span class="p">,</span> <span class="n">B_theta</span><span class="p">,</span> <span class="n">B_phi</span> <span class="o">=</span> <span class="n">synth_values</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+
+<span class="c1"># plot time series of the stations</span>
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">station</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">stations</span><span class="p">):</span>
+    <span class="n">titles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39; $dB_r/dt$ at &#39;</span> <span class="o">+</span> <span class="n">station</span><span class="p">,</span>
+              <span class="s1">&#39; $dB_</span><span class="se">\\</span><span class="s1">theta/dt$ at &#39;</span> <span class="o">+</span> <span class="n">station</span><span class="p">,</span>
+              <span class="s1">&#39; $dB_</span><span class="se">\\</span><span class="s1">phi/dt$ at &#39;</span> <span class="o">+</span> <span class="n">station</span><span class="p">]</span>
+    <span class="n">plot_timeseries</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">B_radius</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">B_theta</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">B_phi</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
+                    <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;nT/yr&#39;</span><span class="p">,</span> <span class="n">titles</span><span class="o">=</span><span class="n">titles</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="figure align-left" id="id3">
+<img alt="_images/plot_timeseries.png" src="_images/plot_timeseries.png" />
+<p class="caption"><span class="caption-text">Timeseries of the secular variation at two ground observatory stations.</span></p>
+</div>
+<p>The same procedure can be repeated with any number of stations.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="index.html">Table Of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#plotting-the-map-of-the-time-dependent-internal-field">Plotting the map of the time-dependent internal field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plotting-the-map-of-the-static-internal-field">Plotting the map of the static internal field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#computing-field-components-on-a-grid">Computing field components on a grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#computing-the-timeseries-of-field-components-at-two-ground-observatories">Computing the timeseries of field components at two ground observatories</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">API references</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="configuration.html"
+                        title="previous chapter">Configuration</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="references.html"
+                        title="next chapter">API references</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/usage.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="references.html" title="API references"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ChaosMagPy 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Clemens Kloss.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.9.
+    </div>
+  </body>
+</html>

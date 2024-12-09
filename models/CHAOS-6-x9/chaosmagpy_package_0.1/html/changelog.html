@@ -1,0 +1,254 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Changelog &#8212; ChaosMagPy 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="API references" href="references.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="references.html" title="API references"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ChaosMagPy 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="changelog">
+<h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-0-1">
+<h2>Version 0.1<a class="headerlink" href="#version-0-1" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line"><strong>Date:</strong> May 10, 2019</div>
+<div class="line"><strong>Release:</strong> v0.1</div>
+</div>
+<div class="section" id="features">
+<h3>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>New CHAOS class method <code class="docutils literal notranslate"><span class="pre">synth_euler_angles</span></code> to compute euler angles for
+the satellites from the CHAOS model (used to rotate vectors from
+magnetometer frame to the satellite frame).</li>
+<li>Added CHAOS class methods <code class="docutils literal notranslate"><span class="pre">synth_values_tdep</span></code>, <code class="docutils literal notranslate"><span class="pre">synth_values_static</span></code>,
+<code class="docutils literal notranslate"><span class="pre">synth_values_gsm</span></code> and <code class="docutils literal notranslate"><span class="pre">synth_values_sm</span></code> for field value computation.</li>
+<li>RC index file now stored in HDF5 format.</li>
+<li>Filepaths and other parameters are now handled by <code class="docutils literal notranslate"><span class="pre">basicConfig</span></code>.</li>
+<li>Added extrapolation keyword to CHAOS class method <code class="docutils literal notranslate"><span class="pre">synth_coeffs</span></code>, linear by
+default.</li>
+<li><code class="docutils literal notranslate"><span class="pre">mjd2000</span></code> now also accepts datetime class instances.</li>
+<li><code class="docutils literal notranslate"><span class="pre">load_RC_datfile</span></code> downloads latest RC-index file from the website if no
+file is given.</li>
+</ul>
+</div>
+<div class="section" id="bugfixes">
+<h3>Bugfixes<a class="headerlink" href="#bugfixes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Resolved issue in <code class="docutils literal notranslate"><span class="pre">model_utils.degree_correlation</span></code>.</li>
+<li>Changed the date conversion to include hours and seconds not just the day
+when plotting the timeseries.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-0-1a3">
+<h2>Version 0.1a3<a class="headerlink" href="#version-0-1a3" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line"><strong>Date:</strong> February 19, 2019</div>
+<div class="line"><strong>Release:</strong> v0.1a3</div>
+</div>
+<div class="section" id="id1">
+<h3>Features<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>New CHAOS class method <code class="docutils literal notranslate"><span class="pre">save_matfile</span></code> to output MATLAB compatible
+files of the CHAOS model (using the <code class="docutils literal notranslate"><span class="pre">hdf5storage</span></code> package).</li>
+<li>Added <code class="docutils literal notranslate"><span class="pre">epoch</span></code> keyword to basevector input arguments of GSM, SM and MAG
+coordinate systems.</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h3>Bugfixes<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fixed problem of the setup configuration for <code class="docutils literal notranslate"><span class="pre">pip</span></code> which caused importing
+the package to fail although installation was indicated as successful.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-0-1a2">
+<h2>Version 0.1a2<a class="headerlink" href="#version-0-1a2" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line"><strong>Date:</strong> January 26, 2019</div>
+<div class="line"><strong>Release:</strong> v0.1a2</div>
+</div>
+<div class="section" id="id3">
+<h3>Features<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">mjd_to_dyear</span></code> and <code class="docutils literal notranslate"><span class="pre">dyear_to_mjd</span></code> convert time with microseconds
+precision to prevent round-off errors in seconds.</li>
+<li>Time conversion now uses built-in <code class="docutils literal notranslate"><span class="pre">calendar</span></code> module to identify leap year.</li>
+</ul>
+</div>
+<div class="section" id="id4">
+<h3>Bugfixes<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fixed wrong package requirement that caused the installation of
+ChaosMagPy v0.1a1 to fail with <code class="docutils literal notranslate"><span class="pre">pip</span></code>. If installation of v0.1a1 is needed,
+use <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--no-deps</span> <span class="pre">chaosmagpy==0.1a1</span></code> to ignore faulty
+requirements.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-0-1a1">
+<h2>Version 0.1a1<a class="headerlink" href="#version-0-1a1" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line"><strong>Date:</strong> January 5, 2019</div>
+<div class="line"><strong>Release:</strong> v0.1a1</div>
+</div>
+<div class="section" id="id5">
+<h3>Features<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Package now supports Matplotlib v3 and Cartopy v0.17.</li>
+<li>Loading shc-file now converts decimal year to <code class="docutils literal notranslate"><span class="pre">mjd2000</span></code> taking leap years
+into account by default.</li>
+<li>Moved <code class="docutils literal notranslate"><span class="pre">mjd2000</span></code> from <code class="docutils literal notranslate"><span class="pre">coordinate_utils</span></code> to <code class="docutils literal notranslate"><span class="pre">data_utils</span></code>.</li>
+<li>Added function to compute degree correlation.</li>
+<li>Added functions to compute and plot the power spectrum.</li>
+<li>Added flexibility to the function synth_values: now supports NumPy
+broadcasting rules.</li>
+<li>Fixed CHAOS class method synth_coeffs_sm default source parameter: now
+defaults to <code class="docutils literal notranslate"><span class="pre">'external'</span></code>.</li>
+</ul>
+</div>
+<div class="section" id="deprecations">
+<h3>Deprecations<a class="headerlink" href="#deprecations" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Optional argument <code class="docutils literal notranslate"><span class="pre">source</span></code> when saving shc-file has been renamed to
+<code class="docutils literal notranslate"><span class="pre">model</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">plot_external_map</span></code> has been renamed to <code class="docutils literal notranslate"><span class="pre">plot_maps_external</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">synth_sm_field</span></code> has been renamed to <code class="docutils literal notranslate"><span class="pre">synth_coeffs_sm</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">synth_gsm_field</span></code> has been renamed to <code class="docutils literal notranslate"><span class="pre">synth_coeffs_gsm</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">plot_static_map</span></code> has been renamed to <code class="docutils literal notranslate"><span class="pre">plot_maps_static</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">synth_static_field</span></code> has been renamed to <code class="docutils literal notranslate"><span class="pre">synth_coeffs_static</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">plot_tdep_maps</span></code> has been renamed to <code class="docutils literal notranslate"><span class="pre">plot_maps_tdep</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">synth_tdep_field</span></code> has been renamed to <code class="docutils literal notranslate"><span class="pre">synth_coeffs_tdep</span></code></li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-0-1a0">
+<h2>Version 0.1a0<a class="headerlink" href="#version-0-1a0" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line"><strong>Date:</strong> October 13, 2018</div>
+<div class="line"><strong>Release:</strong> v0.1a0</div>
+</div>
+<p>Initial release to the users for testing.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="index.html">Table Of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">API references</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-1">Version 0.1</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#features">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bugfixes">Bugfixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-1a3">Version 0.1a3</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Bugfixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-1a2">Version 0.1a2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Bugfixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-1a1">Version 0.1a1</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deprecations">Deprecations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-1a0">Version 0.1a0</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="references.html"
+                        title="previous chapter">API references</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/changelog.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="references.html" title="API references"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ChaosMagPy 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Clemens Kloss.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.9.
+    </div>
+  </body>
+</html>

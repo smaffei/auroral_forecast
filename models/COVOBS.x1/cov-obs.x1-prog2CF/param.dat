@@ -1,0 +1,35 @@
+      real*8 ts, te
+      integer nreal, fsamp, IFUNC
+      character*4 dirname
+
+      parameter(ts	= 1840.0,
+     &		te	= 2020.0,
+     &		fsamp	= 2,		! # points / year
+     &		NREAL	= 50,
+     &		IFUNC	= 3)
+
+c	IFUNC possibilities :
+c
+c	[1] evaluate the MF and SV Gauss coefficients (int and ext) for the average model,
+c		from ts to te with fsamp sampling rate  
+c	- outputs : files mf_int_coefs.dat, sv_int_coefs.dat, mf_ext_coefs.dat, sv_ext_coefs.dat
+c	- storage per line: epoch, g10, g11, h11, g20, g21, h21, g22, h22, g30...
+c
+c	[2] evaluate the (X,Y,Z) prediction (MF and SV) at a given location
+c		at the Earth's surface
+c	- careful ! no constraint on the observatory bias !
+c	- altitude, colatitude and longitude of the location are entered from the keyboard		
+c	- outputs : file svpred.dat
+c	- storage per line: epoch, Xint, Yint, Zint, Xext, Yext, Zext, Xind, Yind, Zind 
+c
+c	[3] evaluate an ensemble of NREAL (max provided=100) MF and SV Gauss coefficients (int and ext) 
+c		generated from the posterior covariance matrix,	from ts to te with fsamp sampling rate  
+c	- outputs : NREAL files real***mf_int_coefs.dat, real***sv_int_coefs.dat, real***mf_ext_coefs.dat, c					real***sv_ext_coefs.dat
+c	- same storage as in [1]
+c
+c	[4] evaluate an ensemble of NREAL (max provided=100) (X,Y,Z) prediction (MF and SV) 
+c		at a given location at the Earth's surface
+c	- careful ! no constraint on the observatory bias !
+c	- outputs : NREAL files real***svpred.dat
+c	- same storage as in [2]
+
